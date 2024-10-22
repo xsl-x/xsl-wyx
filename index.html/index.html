@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>抽奖</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    td {
+      width: 100px;
+      height: 120px;
+      border: 1px solid #000;
+      cursor: pointer;
+      background-color: azure;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+    .hit, .miss {
+      background-color: white;
+      position: relative;
+    }
+    .hit::before {
+      content: "😃";
+      font-size: 24px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .miss::before {
+      content: "送一个吴奕萱";
+      font-size: 14px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #prizeImage {
+      width: 100%;
+      height: auto;
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+
+<body>
+  <table>
+    <tr>
+      <td id="g1"></td>
+      <td id="g2"></td>
+      <td id="g3"></td>
+    </tr>
+    <tr>
+      <td id="g4"></td>
+      <td id="g5"></td>
+      <td id="g6"></td>
+    </tr>
+    <tr>
+      <td id="g7"></td>
+      <td id="g8"></td>
+      <td id="g9">
+        <img id="prizeImage" src="prize.jpg" alt="Prize">
+      </td>
+    </tr>
+  </table>
+
+  <script>
+    window.onload = function() {
+      const prize = Math.floor(Math.random() * 8) + 1;
+      const sounds = {
+        win: new Audio('win.mp3'),
+        lose: new Audio('lose.mp3')
+      };
+      document.querySelectorAll('td')
+        .forEach(ele => ele.addEventListener('click', handler, false));
+
+      let times = 1;
+      function handler(event) {
+        const tag = event.target;
+        if (tag.id === `g${prize}`) {
+          tag.className = 'hit';
+          sounds.win.play();
+          document.getElementById('prizeImage').style.display = 'block';
+          document.getElementById('prizeImage').style.left = `${tag.offsetLeft + tag.offsetWidth / 2}px`;
+          document.getElementById('prizeImage').style.top = `${tag.offsetTop + tag.offsetHeight / 2}px`;
+          const tip = document.createElement("p");
+          tip.textContent = `第${times}次点击：恭喜中奖，送雷小燕和陈思琦，外加一个赠品吴奕萱😃😎🎉`;
+          document.body.appendChild(tip);
+          document.querySelectorAll('td').forEach(t => t.removeEventListener('click', handler, false));
+        } else {
+          tag.className = 'miss';
+          sounds.lose.play();
+          const tip = document.createElement("p");
+          tip.textContent = `第${times}次点击：未中奖☹️`;
+          document.body.appendChild(tip);
+          tag.removeEventListener('click', handler, false);
+        }
+        times++;
+      }
+    }
+  </script>
+</body>
+
+</html>
